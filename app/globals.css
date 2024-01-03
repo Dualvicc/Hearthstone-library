@@ -33,6 +33,7 @@
     --ring: 222.2 84% 4.9%;
  
     --radius: 0.5rem;
+    --main-background: 228, 200, 173;
   }
  
   .dark {
@@ -73,4 +74,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+body {
+
+  background-image: url('/background-texture.png'); /* Ajusta la ruta según tu estructura de carpetas */
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-color: rgb(var(--main-background));
 }
