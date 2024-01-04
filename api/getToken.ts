@@ -1,11 +1,13 @@
-import type { AxiosInstance, AxiosResponse } from 'axios';
+// getToken.ts
+import type { AxiosResponse } from 'axios';
 import axios, { isAxiosError } from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
 const clientSecret = process.env.NEXT_PUBLIC_CLIENT_SECRET;
 const tokenEndpoint = process.env.NEXT_PUBLIC_TOKEN_ENDPOINT;
 
-const axiosInstance: AxiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: tokenEndpoint,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -21,20 +23,23 @@ type TokenResponse = {
   expires_in: number;
 };
 
-export const getToken = async () => {
-  const storedToken = localStorage.getItem('access_token');
-  const storedTokenExpiration = localStorage.getItem('token_expiration');
-
-  if (storedToken && storedTokenExpiration) {
-    const currentTime = Date.now();
-    const expirationTime = parseInt(storedTokenExpiration, 10);
-
-    if (currentTime < expirationTime) {
-      return storedToken;
-    }
-  }
-
+// eslint-disable-next-line consistent-return
+export async function getToken(req: NextApiRequest, res: NextApiResponse) {
   try {
+    const storedToken = localStorage.getItem('access_token');
+    const storedTokenExpiration = localStorage.getItem('token_expiration');
+
+    if (storedToken && storedTokenExpiration) {
+      const currentTime = Date.now();
+      const expirationTime = parseInt(storedTokenExpiration, 10);
+
+      if (currentTime < expirationTime) {
+        if (res) {
+          return res.status(200).json({ token: storedToken });
+        }
+      }
+    }
+
     const response: AxiosResponse<TokenResponse> = await axiosInstance.post(
       '',
       'grant_type=client_credentials'
@@ -47,7 +52,9 @@ export const getToken = async () => {
     localStorage.setItem('access_token', token);
     localStorage.setItem('token_expiration', expirationTime.toString());
 
-    return token;
+    if (res) {
+      return res.status(200).json({ token });
+    }
   } catch (error) {
     if (isAxiosError(error)) {
       console.error('Axios error:', error.response?.data || error.message);
@@ -55,6 +62,8 @@ export const getToken = async () => {
       console.error('Generic error:', error);
     }
 
-    throw error;
+    if (res) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
-};
+}
