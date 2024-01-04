@@ -1,8 +1,8 @@
-# [Balance-Knight](https://balance-knight.vercel.app/)
+# Hearthstone-library
 
 ## Description:
 
-Balance-Knight is currently in active development. Please note that some features may not work correctly, and there might be bugs as it progresses towards completion.
+Experiment on making API calls using Next.js to the hearthstone endpoint that ended finding the project Balance-Knight from bohdanyezhlov and learning from it.
 
 ## Features
 
@@ -11,7 +11,6 @@ Balance-Knight is currently in active development. Please note that some feature
 - Mobile-First Design
 - Modal, Tooltip, Select, etc
 - Server-Side Rendering
-- Unit and E2E Testing (Planned)
 - Deployment on Vercel
 
 ## Technologies
@@ -22,12 +21,7 @@ Balance-Knight is currently in active development. Please note that some feature
 - [Material-UI](https://material-ui.com/)
 - [ESLint](https://eslint.org/)
 - [Prettier](https://prettier.io/)<br>
-  Upcoming Tech Stack Enhancements:
-- [React Query](https://react-query.tanstack.com/)
-- [Jest](https://jestjs.io/)
-- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-- [Cypress](https://www.cypress.io/)
-- [Next-i18next](https://github.com/i18next/next-i18next)
+
 
 ## Development:
 
@@ -37,6 +31,3 @@ Balance-Knight is currently in active development. Please note that some feature
 - Test code: `npm run test`
 - Important: Make sure you have added your Blizzard ID and Secret to the .env file
 
-## Demo:
-
-https://balance-knight.vercel.app
