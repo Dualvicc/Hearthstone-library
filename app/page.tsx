@@ -1,15 +1,18 @@
-import Image from 'next/image'
-import Header from '@/components/Header'
-import Filter from '@/components/Filter'
-import Gallery from '@/components/Gallery'
+import { CardGridLayout } from '@/components/CardGridLayout';
+import { FilterBar } from '@/components/FilterBar';
+import { StatusBar } from '@/components/StatusBar';
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
     <>
-      <Header />
-      <Filter/>
-      <Gallery />
-    </>
+      <FilterBar />
 
-  )
-}
+      <div className="mt-[104px]">
+        <StatusBar />
+        <CardGridLayout />
+      </div>
+    </>
+  );
+};
+
+export default Home;
