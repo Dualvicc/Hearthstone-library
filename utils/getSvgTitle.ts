@@ -14,11 +14,13 @@ import Warrior from '../public/Warrior.svg';
 
 const normalizeWords = (input: string): string => {
   const words = input.split(' ');
-
   const capitalizedWords = words.map((word) => {
     if (word.length === 0) {
       return '';
     }
+    // if (word.length > 1) {
+    //   return word[0].toUpperCase() + word.slice(1).toLowerCase();
+    // }
     return word[0].toUpperCase() + word.slice(1).toLowerCase();
   });
 

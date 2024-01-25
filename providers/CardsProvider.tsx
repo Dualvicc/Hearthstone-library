@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
-import { getCards } from '@/api/getCards';
+import { getCards } from '@/app/api/getCards';
 import { CardsContext } from '@/contexts/CardsContext';
 import { usePageContext } from '@/contexts/PageContext';
 import { useTokenContext } from '@/contexts/TokenContext';

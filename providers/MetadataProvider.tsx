@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { getMetadata } from '@/api/getMetadata';
+import { getMetadata } from '@/app/api/getMetadata';
 import { MetadataContext } from '@/contexts/MetadataContext';
 import { useTokenContext } from '@/contexts/TokenContext';
 import type { TMetadata } from '@/types';

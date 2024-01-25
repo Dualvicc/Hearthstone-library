@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getCardById } from '@/api/getCardById';
+import { getCardById } from '@/app/api/getCardById';
 import type { TCard } from '@/types';
 
 type Props = {

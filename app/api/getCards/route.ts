@@ -1,5 +1,6 @@
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import axios, { isAxiosError } from 'axios';
+import { cookies } from 'next/headers';
 
 import type { TCardData } from '@/types';
 
@@ -34,7 +35,8 @@ export const getCards = async ({
   sortParam = 'manaCost:asc,name:asc,classes:asc,groupByClass:asc',
 }) => {
   try {
-    const accessToken = localStorage.getItem('access_token');
+    const cookieStore = cookies();
+    const accessToken = cookieStore.get('access_token');
 
     const defaultParams: TParams = {
       class: classParam,
@@ -86,3 +88,7 @@ export const getCards = async ({
     throw error;
   }
 };
+
+export async function GET(request: NextApiRequest, response: NextApiResponse) {
+  return handler(request, response);
+}

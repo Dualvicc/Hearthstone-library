@@ -1,10 +1,9 @@
 import '@/styles/globals.css';
 
-import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
 import { Wrapper } from '@/components/Wrapper';
-import { CardsProvider, MetadataProvider, PageProvider, TokenProvider } from '@/providers';
+import { CardsProvider, MetadataProvider, PageProvider } from '@/providers';
 
 const belwe = localFont({
   src: '../public/fonts/Belwe-Bold.woff',
@@ -25,7 +24,7 @@ const openSans = localFont({
   variable: '--font-opensans',
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Hearthstone Card Library',
   description: 'Explore the latest cards and discover your next big idea!',
 };
@@ -34,15 +33,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" className={`${openSans.variable} ${belwe.variable} h-full`}>
       <body className="h-full font-sansSerif text-[14px] font-normal leading-normal text-black">
-        <TokenProvider>
-          <MetadataProvider>
-            <PageProvider>
-              <CardsProvider>
-                <Wrapper>{children}</Wrapper>
-              </CardsProvider>
-            </PageProvider>
-          </MetadataProvider>
-        </TokenProvider>
+        <MetadataProvider>
+          <PageProvider>
+            <CardsProvider>
+              <Wrapper>{children}</Wrapper>
+            </CardsProvider>
+          </PageProvider>
+        </MetadataProvider>
       </body>
     </html>
   );
