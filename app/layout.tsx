@@ -33,13 +33,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" className={`${openSans.variable} ${belwe.variable} h-full`}>
       <body className="h-full font-sansSerif text-[14px] font-normal leading-normal text-black">
-        <MetadataProvider>
+        {/* <MetadataProvider>
           <PageProvider>
-            <CardsProvider>
+            <CardsProvider> */}
               <Wrapper>{children}</Wrapper>
-            </CardsProvider>
+            {/* </CardsProvider>
           </PageProvider>
-        </MetadataProvider>
+        </MetadataProvider> */}
       </body>
     </html>
   );
