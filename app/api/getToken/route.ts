@@ -25,6 +25,20 @@ const requestOptions: RequestInit = {
   },
   body: 'grant_type=client_credentials',
 };
+const setCookies = (token: string, expirationTime: number) => {
+  cookies().set({
+    name: ACCESS_TOKEN_COOKIE,
+    value: token,
+    domain: 'http://localhost:3000',
+    httpOnly: true,
+  });
+  cookies().set({
+    name: TOKEN_EXPIRATION_COOKIE,
+    value: expirationTime.toString(),
+    domain: 'http://localhost:3000',
+    httpOnly: true,
+  });
+};
 
 async function handler() {
   try {
@@ -40,20 +54,7 @@ async function handler() {
     const expiresIn = data.expires_in;
     const expirationTime = Date.now() + expiresIn * 1000;
 
-    cookies().set({
-      name: ACCESS_TOKEN_COOKIE,
-      value: token,
-      httpOnly: true,
-      secure: true,
-      domain: 'http://localhost:3000',
-    });
-    cookies().set({
-      name: TOKEN_EXPIRATION_COOKIE,
-      value: expirationTime.toString(),
-      httpOnly: true,
-      secure: true,
-      domain: 'http://localhost:3000',
-    });
+    setCookies(token, expirationTime);
 
     return NextResponse.json({
       status: 200,
