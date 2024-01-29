@@ -1,7 +1,5 @@
-import type { AxiosResponse } from 'axios';
-import axios, { isAxiosError } from 'axios';
-import { serialize } from 'cookie';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 const tokenEndpoint = process.env.NEXT_PUBLIC_TOKEN_ENDPOINT;
 const clientId = process.env.CLIENT_ID;
@@ -14,50 +12,59 @@ if (!tokenEndpoint || !clientId || !clientSecret) {
   throw new Error('Environment variables are not set');
 }
 
-const axiosInstance = axios.create({
-  baseURL: tokenEndpoint,
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  },
-  auth: {
-    username: clientId,
-    password: clientSecret,
-  },
-});
-
 type TokenResponse = {
   access_token: string;
   expires_in: number;
 };
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    const response: AxiosResponse<TokenResponse> = await axiosInstance.post(
-      '',
-      'grant_type=client_credentials'
-    );
+const requestOptions: RequestInit = {
+  method: 'POST',
+  headers: {
+    'Authorization': `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
+  body: 'grant_type=client_credentials',
+};
 
-    const token = response.data.access_token;
-    const expiresIn = response.data.expires_in;
+async function handler() {
+  try {
+    const response = await fetch(tokenEndpoint, requestOptions);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch token. Status: ${response.status}`);
+    }
+
+    const data: TokenResponse = await response.json();
+
+    const token = data.access_token;
+    const expiresIn = data.expires_in;
     const expirationTime = Date.now() + expiresIn * 1000;
 
-    res.setHeader('Set-Cookie', [
-      serialize(ACCESS_TOKEN_COOKIE, token, { httpOnly: true }),
-      serialize(TOKEN_EXPIRATION_COOKIE, expirationTime.toString(), { httpOnly: true }),
-    ]);
+    cookies().set({
+      name: ACCESS_TOKEN_COOKIE,
+      value: token,
+      httpOnly: true,
+      secure: true,
+      domain: 'http://localhost:3000',
+    });
+    cookies().set({
+      name: TOKEN_EXPIRATION_COOKIE,
+      value: expirationTime.toString(),
+      httpOnly: true,
+      secure: true,
+      domain: 'http://localhost:3000',
+    });
 
-    res.status(200).json({ token });
+    return NextResponse.json({
+      status: 200,
+      body: { token, expiresIn },
+    });
   } catch (error) {
-    if (isAxiosError(error)) {
-      console.error('Axios error:', error.response?.data || error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
-    } else {
-      console.error('Generic error:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+    console.error(error, 'error en la api de blizzard');
+    return NextResponse.json({ error: 'Error en la API de Blizzard' }, { status: 500 });
   }
 }
 
-export async function GET(request: NextApiRequest, response: NextApiResponse) {
-  return handler(request, response);
+export async function GET() {
+  return handler();
 }
