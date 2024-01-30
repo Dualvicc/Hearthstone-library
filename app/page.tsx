@@ -4,10 +4,11 @@
 import { cookies } from 'next/headers';
 
 const Home: React.FC = () => {
-  const Cookies = cookies().getAll();
+  const cookieStore = cookies();
+  const token = cookieStore.get('access_token');
   return (
     <>
-      <h1>{Cookies?.join(', ') || 'No hay cookies'}</h1>
+      <h1>{token?.name && token?.value ? `${token.name} : ${token.value}` : 'no hay token'}</h1>
       {/* <FilterBar />
 
       <div className="mt-[104px]">
