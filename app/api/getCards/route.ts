@@ -1,20 +1,24 @@
-import type { AxiosInstance, AxiosResponse } from 'axios';
-import axios, { isAxiosError } from 'axios';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-import type { TCardData } from '@/types';
+import type { TCard, TCardData } from '@/types';
 
 const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const cardsPath = 'cards';
 const BASE_URL = `${apiEndpoint}${cardsPath}`;
 const PAGE_SIZE = 100;
 
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+const cookieStore = cookies();
+const accessToken = cookieStore.get('access_token');
+
+const requestOptions: RequestInit = {
+  method: 'GET',
   headers: {
     'Content-Type': 'application/json',
+    Authorization: `Bearer ${accessToken}`,
   },
-});
+  body: 'grant_type=client_credentials',
+};
 
 type TParams = Record<string, string>;
 
@@ -35,9 +39,6 @@ export const getCards = async ({
   sortParam = 'manaCost:asc,name:asc,classes:asc,groupByClass:asc',
 }) => {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('access_token');
-
     const defaultParams: TParams = {
       class: classParam,
       textFilter: textFilterParam,
@@ -70,25 +71,21 @@ export const getCards = async ({
       return acc;
     }, {} as TParams);
 
-    const response: AxiosResponse<TCardData> = await axiosInstance.get('', {
-      params: validParams,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    return response.data;
+    // const response: AxiosResponse<TCardData> = await axiosInstance.get('', {
+    //   params: validParams,
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
+    // });
+    const response = await fetch(`${BASE_URL}?${new URLSearchParams(validParams)}`, requestOptions);
+    const data = await response.json();
+    return data;
   } catch (error) {
-    if (isAxiosError(error)) {
-      console.error('Axios error:', error.response?.data || error.message);
-    } else {
-      console.error('Generic error:', error);
-    }
-
-    throw error;
+    console.error(error);
+    return NextResponse.json({ error: 'Error en la API de Blizzard' }, { status: 500 });
   }
 };
 
-export async function GET(request: NextApiRequest, response: NextApiResponse) {
-  return handler(request, response);
+export async function GET(request: TParams) {
+  return getCards(request);
 }
