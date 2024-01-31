@@ -1,28 +1,27 @@
 import { cookies } from 'next/headers';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import type { TCard, TCardData } from '@/types';
+import type { TCardData } from '@/types';
 
 const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const cardsPath = 'cards';
 const BASE_URL = `${apiEndpoint}${cardsPath}`;
 const PAGE_SIZE = 100;
-
 const cookieStore = cookies();
 const accessToken = cookieStore.get('access_token');
 
 const requestOptions: RequestInit = {
   method: 'GET',
   headers: {
-    'Content-Type': 'application/json',
     Authorization: `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
   },
-  body: 'grant_type=client_credentials',
 };
 
 type TParams = Record<string, string>;
 
-export const getCards = async ({
+export const handler = async ({
   page = 1,
   manaCostParam = '',
   healthParam = '',
@@ -77,15 +76,21 @@ export const getCards = async ({
     //     Authorization: `Bearer ${accessToken}`,
     //   },
     // });
-    const response = await fetch(`${BASE_URL}?${new URLSearchParams(validParams)}`, requestOptions);
-    const data = await response.json();
+    const response: Response = await fetch(
+      `${BASE_URL}?${new URLSearchParams(validParams)}`,
+      requestOptions
+    );
+    const data: TCardData = await response.json();
+
     return data;
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Error en la API de Blizzard' }, { status: 500 });
+    if (error) {
+      console.error(error);
+      return NextResponse.json({ error: 'Error en la API de Blizzard' }, { status: 500 });
+    }
   }
 };
 
-export async function GET(request: TParams) {
-  return getCards(request);
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  return handler(request);
 }

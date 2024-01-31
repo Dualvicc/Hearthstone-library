@@ -25,7 +25,7 @@ export const handler = async () => {
       throw new Error('Access token not found in cookies');
     }
 
-    const response = await fetch(apiUrl, requestOptions);
+    const response: Response = await fetch(apiUrl, requestOptions);
     const data: TMetadata = await response.json();
     return data;
   } catch (error) {
